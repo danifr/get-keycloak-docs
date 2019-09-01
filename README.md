@@ -5,6 +5,6 @@ Get Keycloak latest docs all in one file and convert them to epub, markdown and 
 
 How to use it:
 
-`python get_keycloak_docs.py -v --output keycloak_latest.epub`
+`python get_keycloak_docs.py -v --format epub --output keycloak_latest.epub`
 
 Enjoy!
