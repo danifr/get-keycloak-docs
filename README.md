@@ -1,22 +1,26 @@
-Get Keycloak docs
-=================
+Download Keycloak latest official documentation (ebook)
+======================================================
 
-Get Keycloak latest docs all in one file and convert them to epub, markdown and other formats.
+This python code will get Keycloak's latest documentation from https://www.keycloak.org/documentation.html
+put all hte links into a single file and convert it to epub, markdown and other formats.
+
+So you can read the Keycloak docs on your Kindle or other ebook devices.
 
 ## How to use it:
 
-### Execute it directly on your computer
+### Run it directly on your computer
 
 ```
-pip3 install -r requirements.txt
+pip install -r requirements.txt
 python get_keycloak_docs.py -v --format epub --output /tmp/keycloak_docs.epub
 ```
 
-### On a Container 🐋 (recommended)
+### Run it on a Container 🐋 (recommended option)
 
 ```
 sudo docker run -i -t --rm -v /tmp/keycloak_docs/:/output dafero/get-keycloak-docs:v1.0
-# the epub file will be created in /tmp/keycloak_docs/keycloak_docs.epub
 ```
+> Note: the resulting epub file will be created in `/tmp/keycloak_docs/keycloak_docs.epub` on your local machine
+
 
 Enjoy! 🎉
