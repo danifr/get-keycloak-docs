@@ -18,7 +18,7 @@ python get_keycloak_docs.py -v --format epub --output /tmp/keycloak_docs.epub
 ### 🐋 Run it on a Container (recommended option)
 
 ```
-sudo docker run -i -t --rm -v /tmp/keycloak_docs/:/output dafero/get-keycloak-docs:v2.0
+sudo docker run -i -t --rm -v /tmp/keycloak_docs/:/output dafero/get-keycloak-docs:v2.1
 ```
 
 > Note: the resulting file will be created in `/tmp/keycloak_docs/keycloak_docs.epub` on your local machine
