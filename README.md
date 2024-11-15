@@ -10,6 +10,8 @@ So you can read the Keycloak docs on your Kindle or other ebook devices.
 
 ### 💻 Run it directly on your computer
 
+As a requirement, you  will need `pandoc` installed, please follow: https://pandoc.org/installing.html
+
 ```
 pip install -r requirements.txt
 python get_keycloak_docs.py -v --format epub --output /tmp/keycloak_docs.epub
@@ -18,7 +20,7 @@ python get_keycloak_docs.py -v --format epub --output /tmp/keycloak_docs.epub
 ### 🐋 Run it on a Container (recommended option)
 
 ```
-sudo docker run -i -t --rm -v /tmp/keycloak_docs/:/output dafero/get-keycloak-docs:v2.1.2
+sudo docker run -i -t --rm -v /tmp/keycloak_docs/:/output dafero/get-keycloak-docs:v2.2
 ```
 
 > Note: the resulting file will be created in `/tmp/keycloak_docs/keycloak_docs.epub` on your local machine
