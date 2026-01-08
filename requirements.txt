@@ -2,4 +2,4 @@ beautifulsoup4==4.12.3
 pypandoc==1.14
 readability-lxml==0.8.1
 lxml_html_clean==0.4.1
-urllib3==2.2.3
+urllib3==2.6.3
