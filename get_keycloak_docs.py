@@ -16,6 +16,7 @@ import urllib.request
 import pypandoc
 
 from argparse import ArgumentParser
+from urllib.parse import urljoin, urlparse
 from bs4 import BeautifulSoup
 from readability.readability import Document
 
@@ -32,34 +33,74 @@ def load_url(url):
        raise Exception("URL '%s' NOT found" % url)
 
 
+def get_guide_urls(guides_url):
+    """
+    Get the URLs of the guides listed in a guides page section
+
+    :param guides_url URL of the guides page, optionally with a #section fragment
+    """
+    page_url, _, section = guides_url.partition('#')
+    soup = BeautifulSoup(load_url(page_url), 'html.parser')
+    categories = soup.find_all('div', attrs={'class': 'guide-category'})
+    if section:
+        categories = [c for c in categories if c.get('id') == section]
+    hrefs = [a['href'] for c in categories for a in c.find_all('a', attrs={'class': 'stretched-link'})]
+    return [h for h in hrefs if urlparse(h).netloc == urlparse(page_url).netloc]
+
+
+def get_docs_urls(base_url):
+    """
+    Get the URLs of every chapter of the Keycloak docs
+
+    :param base_url URL where the docs index is located
+    """
+    soup = BeautifulSoup(load_url(base_url), 'html.parser')
+    table = soup.find('table', attrs={'class': 'kc-table-docs'})
+    if table is None:
+        raise Exception("Docs table not found in %s, the page layout may have changed" % base_url)
+
+    urls = []
+    for row in table.find('tbody').find_all('tr'):
+        url = row.find_all('td')[0].find('a')['href']
+        if "docs-api" in url:
+            continue
+        if urlparse(url).path.rstrip('/') == '/guides':
+            urls.extend(get_guide_urls(url))
+        else:
+            urls.append(url)
+    return list(dict.fromkeys(urls))
+
+
+def absolutize_urls(html, page_url):
+    """
+    Make relative image sources and links absolute so pandoc can fetch the images
+
+    :param html HTML of the page
+    :param page_url URL the page was downloaded from
+    """
+    soup = BeautifulSoup(html, 'html.parser')
+    for tag, attr in (('img', 'src'), ('a', 'href')):
+        for element in soup.find_all(tag, attrs={attr: True}):
+            if not element[attr].startswith('#'):
+                element[attr] = urljoin(page_url, element[attr])
+    return str(soup)
+
+
 def get_docs_content(base_url):
     """
     Get the content of every chapter of the Keycloak docs
 
     :param base_url URL where the docs index is located
     """
-    html_doc = load_url(base_url)
-    soup = BeautifulSoup(html_doc, 'html.parser')
     docs_content = ""
-
-    data = []
-    table = soup.find('table', attrs={'class':'table table-bordered table-striped'})
-    table_body = table.find('tbody')
-
-    rows = table_body.find_all('tr')
-    for row in rows:
-        cols = row.find_all('td')
-        url = cols[0].find_all('a')[0]['href']
-        if "docs-api" not in url:
-            logging.info("Downloading content from %s..." % url)
-            content = load_url(url)
-            readable_article = content
-            readable_title = Document(content).short_title()
-            readable_article = '<h2>'+readable_title+'</h2><br/>'+readable_article
-            docs_content += readable_article
-            logging.info("Content parsed successfully")
+    for url in get_docs_urls(base_url):
+        logging.info("Downloading content from %s..." % url)
+        content = absolutize_urls(load_url(url), url)
+        readable_title = Document(content).short_title()
+        docs_content += '<h2>' + readable_title + '</h2><br/>' + content
+        logging.info("Content parsed successfully")
     return docs_content
- 
+
 
 def main():
     parser = ArgumentParser(description="Download Keycloak latest docs all in one file and convert them to epub markdown")
