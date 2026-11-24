@@ -1,4 +1,5 @@
 FROM python:3.14-slim AS compile-image
+ARG TARGETARCH
 MAINTAINER danifr <daferoes gmail com>
 
 WORKDIR /app
@@ -14,7 +15,7 @@ RUN apt-get update && \
 
 RUN curl -L -O $(curl https://api.github.com/repos/jgm/pandoc/releases/latest \
   | grep browser_download_url \
-  | grep linux-amd64 \
+  | grep linux-${TARGETARCH} \
   | cut -d '"' -f 4)
 
 RUN tar xvf pandoc-*.tar.gz --strip-components 1 -C /usr/local
