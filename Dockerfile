@@ -1,4 +1,4 @@
-FROM python:3.8-slim AS compile-image
+FROM python:3.14-slim AS compile-image
 MAINTAINER danifr <daferoes gmail com>
 
 WORKDIR /app
@@ -19,7 +19,7 @@ RUN curl -L -O $(curl https://api.github.com/repos/jgm/pandoc/releases/latest \
 
 RUN tar xvf pandoc-*.tar.gz --strip-components 1 -C /usr/local
 
-FROM python:3.8-slim AS build-image
+FROM python:3.14-slim AS build-image
 COPY --from=compile-image /usr/local/bin/pandoc /usr/local/bin/pandoc
 COPY --from=compile-image /root/.local /root/.local
 COPY get_keycloak_docs.py ./
